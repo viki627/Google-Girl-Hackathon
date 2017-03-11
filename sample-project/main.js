@@ -4,15 +4,72 @@
 //  A project template for using arbor.js
 //
 // Instantiate a slider
+var hot_topic={
+  num: 2,
+  topic: new Array(),
+};
+hot_topic.topic[1]="Java";
+hot_topic.topic[2]="C++";
+var related_topic={
+  num: 0,
+  topic: new Array(),
+};
+var v=-1;
+$("#search_button").click(function(){
+  var search_text = $('#search_text').val();
+  $.ajax({
+            url: '/index',
+            data: $('form').serialize(),
+            type: 'POST',
+            success: function(response) {
+                console.log(response);
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+});
+var changetime = function(value) {
+  
+  if(slider.getValue() != v){
+
+  v = slider.getValue();
+  console.log(v);
+  $.ajax({
+            url: '/index',
+            data: v,
+            type: 'POST',
+            success: function(response) {
+                console.log(response);
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+  }
+};
 var slider = new Slider("#ex11", {
   step: 40000,
   min: 0,
   max: 200000,
   value: 0,
   tooltip: 'show',
-  handle:'custom', 
-});
+  handle:'custom',
+  formatter: function(value) {
+    if(value == 0)return 'One Year ' ;
+    else if(value == 40000) return 'Half A Year'
+    else if(value == 80000) return 'Three Months';
+    else if(value == 120000) return 'One Month'
+    else if(value == 160000) return 'Two Weeks'
+    else if(value == 200000) return 'One Week'
+  },
 
+})
+    .on('slide', changetime);
+
+
+
+    
 (function($){
 
   var Renderer = function(canvas){
@@ -80,7 +137,7 @@ var slider = new Slider("#ex11", {
           ctx.fillStyle=(node.data.alone) ? "orange" : "grey";//填充颜色,默认是黑色
           ctx.fill();//画实心圆
           ctx.closePath();
-          gfx.text('H', pt.x, pt.y+7, {color:"black", align:"center", font:"Arial", size:10})
+          gfx.text(node.name, pt.x, pt.y+7, {color:"black", align:"center", font:"Arial", size:10})
           //ctx.fillStyle = (node.data.alone) ? "orange" : "black"
           //ctx.fillRect(pt.x-w/2, pt.y-w/2, w,w)
         })          
@@ -142,6 +199,20 @@ var slider = new Slider("#ex11", {
             if (!nearest.node) return false
             selected = (nearest.distance < 50) ? nearest : null
             if(selected){
+              
+              $.ajax({
+                //console.log('2');
+            //url: '/index',
+            //data: nearest.node.name
+            //type: 'POST',
+            //success: function(response) {
+            //    console.log(response);
+            //},
+            //error: function(error) {
+            //    console.log(error);
+            //}
+        });
+
               if(nearest.node.name!=_section){
                 console.log('1');
               _section = nearest.node
@@ -158,31 +229,7 @@ var slider = new Slider("#ex11", {
                   sys.pruneNode(11);
                   sys.pruneNode(12);
                               }
-           /* if (nearest.node.data.shape !='ndot'){
-              console.log('dot');
-              selected = (nearest.distance < 50) ? nearest : null
-              if (selected){
-                dom.addClass('linkable')
-                 window.status = selected.node.data.link.replace(/^\//,"http://"+window.location.host+"/").replace(/^#/,'')
-              //Edge = sys.addEdge(1,11)
-              }
-              else{
-                 dom.removeClass('linkable')
-                 window.status = ''
-              }
-            }
-            else if ($.inArray(nearest.node.name, ['arbor.js','code','docs','demos']) >=0 ){
-              console.log('dot');
-              if (nearest.node.name!=_section){
-                _section = nearest.node
-                that.switchSection(_section)
-                //Edge = sys.addEdge(_section,11)
-              }
-              dom.removeClass('linkable')
-              window.status = ''
-              //sys.pruneEdge(Edge);
-            }*/
-            
+          
             return false
           },
           clicked:function(e){
@@ -235,40 +282,14 @@ var slider = new Slider("#ex11", {
     //$("#ex11").slider({step: 20000, min: 0, max: 200000});
     return that;
   }    
-/*$("Button").click(function(){
-  sys.pruneNode(10)
-  sys.pruneNode(9)
-  });*/
-/*$(viewport).hover(
-  function(){
-  Edge = sys.addEdge(1,11)
-  Edge1 = sys.addEdge(1,12)
-},
-function(){
- // Edge = getEdges(1,2);
-  sys.pruneNode(11)
-  sys.pruneNode(12)
-}
-);*/
+
   $(document).ready(function(){
     sys = arbor.ParticleSystem(100, 15, 0.5) // create the system with sensible repulsion/stiffness/friction
     sys.parameters({gravity:true}) // use center-gravity to make the graph settle nicely (ymmv)
     sys.renderer = Renderer("#viewport") // our newly created renderer will have its .init() method called shortly by sys...
-
-    // add some nodes to the graph and watch it go...
-    //sys.addEdge('a','b')
-    //sys.addEdge('a','c')
-    //sys.addEdge('a','d')
-    //sys.addEdge('a','e')
-    //sys.addNode('f', {alone:false, mass:.25})
-    //sys.addNode('f', {alone:false, mass:.25})
-    //sys.addNode('f', {alone:false, mass:.25})
-    // or, equivalently:
-    //
-
-    var n = 5;
-    for(var i = 1; i <= n ;i ++){
-      sys.addNode(i,{alone:true, mass:.85,shape:"dot"})
+    var n = 8;
+    for( i = 1; i <= hot_topic.num ;i ++){
+      sys.addNode(hot_topic.topic[i],{alone:true, mass:.85,shape:"dot",number:i})
     }
     //sys.addEdge(3,4)
      /*sys.graft({
