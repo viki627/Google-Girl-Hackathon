@@ -3,7 +3,20 @@
 //
 //  A project template for using arbor.js
 //
-
+$(function(){  
+  
+    var currentValue = $('#currentValue');  
+  
+    $('#defaultSlider').change(function(){  
+        currentValue.html(this.value);  
+    });  
+  
+    // Trigger the event on load, so  
+    // the value field is populated:  
+  
+    $('#defaultSlider').change();  
+  
+});  
 (function($){
 
   var Renderer = function(canvas){
@@ -65,10 +78,10 @@
           // pt:   {x:#, y:#}  node position in screen coords
 
           // draw a rectangle centered at pt
-          var w = 30
+          var w = 50
           ctx.beginPath();
           ctx.arc(pt.x,pt.y,w/2,0,360,false);
-          ctx.fillStyle=(node.data.alone) ? "orange" : "black";//填充颜色,默认是黑色
+          ctx.fillStyle=(node.data.alone) ? "orange" : "grey";//填充颜色,默认是黑色
           ctx.fill();//画实心圆
           ctx.closePath();
           gfx.text('H', pt.x, pt.y+7, {color:"black", align:"center", font:"Arial", size:10})
@@ -76,7 +89,42 @@
           //ctx.fillRect(pt.x-w/2, pt.y-w/2, w,w)
         })          
       },
+       switchMode:function(e){
+        console.log('swm');
+        if (e.mode=='hidden'){
+          dom.stop(true).fadeTo(e.dt,0, function(){
+            if (sys) sys.stop()
+            $(this).hide()
+          })
+        }else if (e.mode=='visible'){
+          dom.stop(true).css('opacity',0).show().fadeTo(e.dt,1,function(){
+            that.resize()
+          })
+          if (sys) sys.start()
+        }
+      },
       
+      switchSection:function(newSection){
+        var parent = sys.getEdgesFrom(newSection)[0].source
+        var children = $.map(sys.getEdgesFrom(newSection), function(edge){
+          return edge.target
+        })
+        
+        sys.eachNode(function(node){
+          if (node.data.shape=='dot') return // skip all but leafnodes
+
+          var nowVisible = ($.inArray(node, children)>=0)
+          var newAlpha = (nowVisible) ? 1 : 0
+          var dt = (nowVisible) ? .5 : .5
+          sys.tweenNode(node, dt, {alpha:newAlpha})
+
+          if (newAlpha==1){
+            node.p.x = parent.p.x + .05*Math.random() - .025
+            node.p.y = parent.p.y + .05*Math.random() - .025
+            node.tempMass = .001
+          }
+        })
+      },
       initMouseHandling:function(){
         // no-nonsense drag and drop (thanks springy.js)
         var dragged = null;
@@ -90,37 +138,56 @@
         // for moves and mouseups while dragging
         var handler = {
         
-        /*   moved:function(e){
+          moved:function(e){
             var pos = $(canvas).offset();
             _mouseP = arbor.Point(e.pageX-pos.left, e.pageY-pos.top)
             nearest = sys.nearest(_mouseP);
-
+            
             if (!nearest.node) return false
-
-            /*if (nearest.node.data.shape!='dot'){
+            selected = (nearest.distance < 50) ? nearest : null
+            if(selected){
+              if(nearest.node.name!=_section){
+                console.log('1');
+              _section = nearest.node
+              Edge = sys.addEdge(_section,11)
+              Edge1 = sys.addEdge(_section,12)
+              //Edge2 = sys.addEdge(_section,13)
+              //Edge3 = sys.addEdge(_section,14)
+              
+            }
+              //sys.pruneNode(11);
+            }
+            else{
+              for(var i = 11; i <= 12 ;i++)
+                  sys.pruneNode(i);
+            }
+           /* if (nearest.node.data.shape !='ndot'){
+              console.log('dot');
               selected = (nearest.distance < 50) ? nearest : null
               if (selected){
-                 //dom.addClass('linkable')
-                 //window.status = selected.node.data.link.replace(/^\//,"http://"+window.location.host+"/").replace(/^#/,'')
+                dom.addClass('linkable')
+                 window.status = selected.node.data.link.replace(/^\//,"http://"+window.location.host+"/").replace(/^#/,'')
               //Edge = sys.addEdge(1,11)
               }
               else{
-                 //dom.removeClass('linkable')
-                 //window.status = ''
+                 dom.removeClass('linkable')
+                 window.status = ''
               }
-            }else if ($.inArray(nearest.node.name, ['arbor.js','code','docs','demos']) >=0 ){
+            }
+            else if ($.inArray(nearest.node.name, ['arbor.js','code','docs','demos']) >=0 ){
+              console.log('dot');
               if (nearest.node.name!=_section){
-                _section = nearest.node.name
-                //that.switchSection(_section)
-                Edge = sys.addEdge(_section,11)
+                _section = nearest.node
+                that.switchSection(_section)
+                //Edge = sys.addEdge(_section,11)
               }
-              //dom.removeClass('linkable')
-              //window.status = ''
-              sys.pruneEdge(Edge);
-            
+              dom.removeClass('linkable')
+              window.status = ''
+              //sys.pruneEdge(Edge);
+            }*/
             
             return false
-          },*/
+          },
           clicked:function(e){
             var pos = $(canvas).offset();
             _mouseP = arbor.Point(e.pageX-pos.left, e.pageY-pos.top)
@@ -137,6 +204,7 @@
             return false
           },
           dragged:function(e){
+            //console.log('1');
             var pos = $(canvas).offset();
             var s = arbor.Point(e.pageX-pos.left, e.pageY-pos.top)
 
@@ -161,6 +229,7 @@
         }
         
         // start listening
+        $(canvas).mousemove(handler.moved);
         $(canvas).mousedown(handler.clicked);
 
       },
@@ -184,7 +253,7 @@ function(){
 }
 );*/
   $(document).ready(function(){
-    sys = arbor.ParticleSystem(1000, 600, 0.5) // create the system with sensible repulsion/stiffness/friction
+    sys = arbor.ParticleSystem(100, 15, 0.5) // create the system with sensible repulsion/stiffness/friction
     sys.parameters({gravity:true}) // use center-gravity to make the graph settle nicely (ymmv)
     sys.renderer = Renderer("#viewport") // our newly created renderer will have its .init() method called shortly by sys...
 
@@ -198,10 +267,10 @@ function(){
     //sys.addNode('f', {alone:false, mass:.25})
     // or, equivalently:
     //
-    
-    var n = 10;
+
+    var n = 5;
     for(var i = 1; i <= n ;i ++){
-      sys.addNode(i,{alone:true, mass:.55})
+      sys.addNode(i,{alone:true, mass:.85,shape:"dot"})
     }
     //sys.addEdge(3,4)
      /*sys.graft({
