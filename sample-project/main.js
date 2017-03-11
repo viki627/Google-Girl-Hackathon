@@ -3,20 +3,16 @@
 //
 //  A project template for using arbor.js
 //
-$(function(){  
-  
-    var currentValue = $('#currentValue');  
-  
-    $('#defaultSlider').change(function(){  
-        currentValue.html(this.value);  
-    });  
-  
-    // Trigger the event on load, so  
-    // the value field is populated:  
-  
-    $('#defaultSlider').change();  
-  
-});  
+// Instantiate a slider
+var slider = new Slider("#ex11", {
+  step: 40000,
+  min: 0,
+  max: 200000,
+  value: 0,
+  tooltip: 'show',
+  handle:'custom', 
+});
+
 (function($){
 
   var Renderer = function(canvas){
@@ -78,7 +74,7 @@ $(function(){
           // pt:   {x:#, y:#}  node position in screen coords
 
           // draw a rectangle centered at pt
-          var w = 50
+          var w = 40
           ctx.beginPath();
           ctx.arc(pt.x,pt.y,w/2,0,360,false);
           ctx.fillStyle=(node.data.alone) ? "orange" : "grey";//填充颜色,默认是黑色
@@ -158,9 +154,10 @@ $(function(){
               //sys.pruneNode(11);
             }
             else{
-              for(var i = 11; i <= 12 ;i++)
-                  sys.pruneNode(i);
-            }
+              
+                  sys.pruneNode(11);
+                  sys.pruneNode(12);
+                              }
            /* if (nearest.node.data.shape !='ndot'){
               console.log('dot');
               selected = (nearest.distance < 50) ? nearest : null
@@ -235,7 +232,8 @@ $(function(){
       },
       
     }
-    return that
+    //$("#ex11").slider({step: 20000, min: 0, max: 200000});
+    return that;
   }    
 /*$("Button").click(function(){
   sys.pruneNode(10)
