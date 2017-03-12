@@ -15,6 +15,7 @@ def Search():
 	search_text = request.args.get('keyword')
 	print search_text
 	#print search_text
+	
 	return jsonify({'data': 'ok'})
 
 if __name__ == '__main__':

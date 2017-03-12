@@ -4,37 +4,19 @@
 //  A project template for using arbor.js
 //
 // Instantiate a slider
-var hot_topic = {
-    topic : new Array(),
-    heat: new Array(),
-    related_topic_num :new Array(),
-  }
-  hot_topic.topic = [0,"1212",2,3,4,5,6,7,8,9,10,11,12,13,14,15,16];
-  hot_topic.heat = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16];
-  hot_topic.related_topic_num[0,3,4]
-var related_topic ={
-  name: new Array(),
-  heat: new Array(),
-}
-related_topic.name = [0,1,1,1,null,null,2,2,2,2,null];
-related_topic.heat = [0,1,1,1,null,null,2,2,2,2,null];
-var changedata = function(){
-  var hot_topic = {
-    topic : new Array(),
-    heat: new Array(),
-    related_topic_num: new Array(),
-    related_topic:new Array(),
-  }
-  topic = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16];
-  heat = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16];
-  related_topic_num = [];
-  related_topic = [];
-}
 
+var changehide= function(){
+    $("#viewport").show();
+    $(".slider").show();
+    $("#search_show").hide();
+}
 $("#search_button").click(function(){
 
-  var search_text = 'abc';
+  var search_text = $("#search_text").val(); ;
   console.log(search_text);
+    $("#viewport").hide();
+    $(".slider").hide();
+    $("#search_show").show();
   $.ajax({
             url: '/search',
             data: {keyword:search_text},
@@ -316,7 +298,9 @@ var slider = new Slider("#ex11", {
   $(document).ready(function(){
     sys = arbor.ParticleSystem(100, 15, 0.5) // create the system with sensible repulsion/stiffness/friction
     sys.parameters({gravity:true}) // use center-gravity to make the graph settle nicely (ymmv)
-    sys.renderer = Renderer("#viewport") // our newly created renderer will have its .init() method called shortly by sys...
+    sys.renderer = Renderer("#viewport")
+    $("#search_show").hide();
+     // our newly created renderer will have its .init() method called shortly by sys...
     var n = 8;
     for( i = 1; i <= 8 ;i ++){
       sys.addNode(i,{alone:true, mass:.85,shape:"dot",heat:hot_topic.heat[i],topicname:hot_topic.topic[i]});
@@ -340,3 +324,29 @@ var slider = new Slider("#ex11", {
   })
 
 })(this.jQuery)
+var hot_topic = {
+    topic : new Array(),
+    heat: new Array(),
+    related_topic_num :new Array(),
+  }
+  hot_topic.topic = [0,"1212",2,3,4,5,6,7,8,9,10,11,12,13,14,15,16];
+  hot_topic.heat = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16];
+  hot_topic.related_topic_num[0,3,4]
+var related_topic ={
+  name: new Array(),
+  heat: new Array(),
+}
+related_topic.name = [0,1,1,1,null,null,2,2,2,2,null];
+related_topic.heat = [0,1,1,1,null,null,2,2,2,2,null];
+var changedata = function(){
+  var hot_topic = {
+    topic : new Array(),
+    heat: new Array(),
+    related_topic_num: new Array(),
+    related_topic:new Array(),
+  }
+  topic = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16];
+  heat = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16];
+  related_topic_num = [];
+  related_topic = [];
+}
