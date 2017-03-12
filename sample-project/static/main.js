@@ -4,44 +4,63 @@
 //  A project template for using arbor.js
 //
 // Instantiate a slider
-var hot_topic={
-  num: 8,
-  topic: new Array(),
-};
-hot_topic.topic[1]="Java";
-hot_topic.topic[2]="C++";
-var related_topic={
-  num: 0,
-  topic: new Array(),
-};
-var v=-1;
-var button_clicked = function(){
-var search_text = 'abc'
+var hot_topic = {
+    topic : new Array(),
+    heat: new Array(),
+    related_topic_num :new Array(),
+  }
+  hot_topic.topic = [0,"1212",2,3,4,5,6,7,8,9,10,11,12,13,14,15,16];
+  hot_topic.heat = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16];
+  hot_topic.related_topic_num[0,3,4]
+var related_topic ={
+  name: new Array(),
+  heat: new Array(),
+}
+related_topic.name = [0,1,1,1,null,null,2,2,2,2,null];
+related_topic.heat = [0,1,1,1,null,null,2,2,2,2,null];
+var changedata = function(){
+  var hot_topic = {
+    topic : new Array(),
+    heat: new Array(),
+    related_topic_num: new Array(),
+    related_topic:new Array(),
+  }
+  topic = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16];
+  heat = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16];
+  related_topic_num = [];
+  related_topic = [];
+}
+
+$("#search_button").click(function(){
+
+  var search_text = 'abc';
   console.log(search_text);
-};
-//$("#search_button").click(function(){
-  
-  /*$.ajax({
+  $.ajax({
             url: '/search',
-            data: {keyword:search_text},            
+            data: {keyword:search_text},
+            datatype : 'json',
             type: 'post',
-            dataType:'json',
             success: function(response) {
                 console.log(response);
             },
             error: function(error) {
                 console.log(error);
             }
-        });*/
-//});
+        });
+});
 var changetime = function(value) {
   
   if(slider.getValue() != v){
-
+    console.log(v);
+    for(var j = (v-1)*8+1; j <= v*8; j++)
+      sys.pruneNode(j);
   v = slider.getValue();
   console.log(v);
+  for(var j = (v-1)*8+1; j <= v*8; j++)
+    sys.addNode(j,{alone:true, mass:.85,shape:"dot",heat:hot_topic.heat[j],topicname:hot_topic.topic[j]});
+  console.log(v);
   /*$.ajax({
-            url: '/index',
+            url: '/',
             data: v,
             type: 'POST',
             success: function(response) {
@@ -50,23 +69,23 @@ var changetime = function(value) {
             error: function(error) {
                 console.log(error);
             }
-        });
-  }*/
+        });*/
+  }
 };
 var slider = new Slider("#ex11", {
-  step: 40000,
-  min: 0,
-  max: 200000,
-  value: 0,
+  step: 1,
+  min: 1,
+  max: 6,
+  value: 1,
   tooltip: 'show',
   handle:'custom',
   formatter: function(value) {
-    if(value == 0)return 'One Year ' ;
-    else if(value == 40000) return 'Half A Year'
-    else if(value == 80000) return 'Three Months';
-    else if(value == 120000) return 'One Month'
-    else if(value == 160000) return 'Two Weeks'
-    else if(value == 200000) return 'One Week'
+    if(value == 1)return 'One Year ' ;
+    else if(value == 2) return 'Half A Year'
+    else if(value == 3) return 'Three Months';
+    else if(value == 4) return 'One Month'
+    else if(value == 5) return 'Two Weeks'
+    else if(value == 6) return 'One Week'
   },
 
 })
@@ -136,13 +155,13 @@ var slider = new Slider("#ex11", {
           // pt:   {x:#, y:#}  node position in screen coords
 
           // draw a rectangle centered at pt
-          var w =node.heat*2+30;
+          var w = node.data.heat*4 + 40;
           ctx.beginPath();
           ctx.arc(pt.x,pt.y,w/2,0,360,false);
           ctx.fillStyle=(node.data.alone) ? "orange" : "grey";//填充颜色,默认是黑色
           ctx.fill();//画实心圆
           ctx.closePath();
-          gfx.text(node.name, pt.x, pt.y+7, {color:"black", align:"center", font:"Arial", size:10})
+          gfx.text(node.data.topicname, pt.x, pt.y+7, {color:"white", align:"center", font:"Arial", size:10})
           //ctx.fillStyle = (node.data.alone) ? "orange" : "black"
           //ctx.fillRect(pt.x-w/2, pt.y-w/2, w,w)
         })          
@@ -205,7 +224,7 @@ var slider = new Slider("#ex11", {
             selected = (nearest.distance < 50) ? nearest : null
             if(selected){
               
-              $.ajax({
+             // $.ajax({
                 //console.log('2');
             //url: '/index',
             //data: nearest.node.name
@@ -216,24 +235,30 @@ var slider = new Slider("#ex11", {
             //error: function(error) {
             //    console.log(error);
             //}
-        });
+        //});
 
               if(nearest.node.name!=_section){
                 console.log('1');
               _section = nearest.node
-              Edge = sys.addEdge(_section,11)
-              Edge1 = sys.addEdge(_section,12)
+              var count = nearest.node.name
+              console.log(count)
+              for(var j= 11; j<= 12; j++)
+                {
+                  sys.addNode(j,{alone:false, mass:.85,shape:"dot",heat:related_topic.heat[j-10],topicname:related_topic.name[j-10]});
+                  sys.addEdge(j,count)
+                }
               //Edge2 = sys.addEdge(_section,13)
               //Edge3 = sys.addEdge(_section,14)
               
             }
               //sys.pruneNode(11);
+              
+
             }
             else{
-              
-                  sys.pruneNode(11);
-                  sys.pruneNode(12);
-                              }
+              for(var j= 11; j<= 12 ; j++)
+                sys.pruneNode(j);
+                }
           
             return false
           },
@@ -293,17 +318,17 @@ var slider = new Slider("#ex11", {
     sys.parameters({gravity:true}) // use center-gravity to make the graph settle nicely (ymmv)
     sys.renderer = Renderer("#viewport") // our newly created renderer will have its .init() method called shortly by sys...
     var n = 8;
-    for( i = 1; i <= hot_topic.num ;i ++){
-      sys.addNode(i,{alone:true, mass:.85,shape:"dot",heat:"0"})
-      heat=i;
+    for( i = 1; i <= 8 ;i ++){
+      sys.addNode(i,{alone:true, mass:.85,shape:"dot",heat:hot_topic.heat[i],topicname:hot_topic.topic[i]});
     }
+    v=1;
     //sys.addEdge(3,4)
      /*sys.graft({
        nodes:{
          for(var i = 1; i <= 10 ; i++)
           i:{alone:true, mass:.55},
-       } */
-       /*edges:{
+       }
+       edges:{
          a:{ b:{},
              c:{},
              d:{},

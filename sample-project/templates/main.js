@@ -7,40 +7,38 @@
 var hot_topic={
   num: 8,
   topic: new Array(),
+  heat: 0,
 };
 hot_topic.topic[1]="Java";
 hot_topic.topic[2]="C++";
 var related_topic={
   num: 0,
   topic: new Array(),
+  heat: 0,
 };
 var v=-1;
-var button_clicked = function(){
-var search_text = 'abc'
-  console.log(search_text);
-};
-//$("#search_button").click(function(){
-  
-  /*$.ajax({
-            url: '/search',
-            data: {keyword:search_text},            
-            type: 'post',
-            dataType:'json',
+$("#search_button").click(function(){
+  var search_text = $('#search_text').val();
+  $.ajax({
+            url: '/index',
+            data: $('form').serialize(),
+            type: 'POST',
+            datatype: "json"
             success: function(response) {
                 console.log(response);
             },
             error: function(error) {
                 console.log(error);
             }
-        });*/
-//});
+        });
+});
 var changetime = function(value) {
   
   if(slider.getValue() != v){
 
   v = slider.getValue();
   console.log(v);
-  /*$.ajax({
+  $.ajax({
             url: '/index',
             data: v,
             type: 'POST',
@@ -51,7 +49,7 @@ var changetime = function(value) {
                 console.log(error);
             }
         });
-  }*/
+  }
 };
 var slider = new Slider("#ex11", {
   step: 40000,
@@ -136,13 +134,13 @@ var slider = new Slider("#ex11", {
           // pt:   {x:#, y:#}  node position in screen coords
 
           // draw a rectangle centered at pt
-          var w =node.heat*2+30;
+          var w = node.data.heat*4 + 40
           ctx.beginPath();
           ctx.arc(pt.x,pt.y,w/2,0,360,false);
           ctx.fillStyle=(node.data.alone) ? "orange" : "grey";//填充颜色,默认是黑色
           ctx.fill();//画实心圆
           ctx.closePath();
-          gfx.text(node.name, pt.x, pt.y+7, {color:"black", align:"center", font:"Arial", size:10})
+          gfx.text(node.name, pt.x, pt.y+7, {color:"white", align:"center", font:"Arial", size:10})
           //ctx.fillStyle = (node.data.alone) ? "orange" : "black"
           //ctx.fillRect(pt.x-w/2, pt.y-w/2, w,w)
         })          
@@ -294,8 +292,7 @@ var slider = new Slider("#ex11", {
     sys.renderer = Renderer("#viewport") // our newly created renderer will have its .init() method called shortly by sys...
     var n = 8;
     for( i = 1; i <= hot_topic.num ;i ++){
-      sys.addNode(i,{alone:true, mass:.85,shape:"dot",heat:"0"})
-      heat=i;
+      sys.addNode(i,{alone:true, mass:.85,shape:"dot",heat:i})
     }
     //sys.addEdge(3,4)
      /*sys.graft({
