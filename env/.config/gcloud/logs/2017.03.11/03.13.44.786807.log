@@ -1,0 +1,17 @@
+2017-03-11 03:13:44,788 DEBUG    root            Loaded Command Group: ['gcloud', 'auth']
+2017-03-11 03:13:44,789 DEBUG    root            Loaded Command Group: ['gcloud', 'auth', 'activate_service_account']
+2017-03-11 03:13:44,790 DEBUG    root            Running gcloud.auth.activate-service-account with Namespace(_deepest_parser=ArgumentParser(prog='gcloud.auth.activate-service-account', usage=None, description='Obtains access credentials for the service account using a .json (preferred)\nor .p12 file that contains a private authorization key. You obtain the key\nfile from the [Cloud Platform console](https://console.cloud.google.com). For\n.p12 files, a password is required. This password is displayed in the console\nwhen you create the key. If you specify a project using the `--project` flag,\nthe project is set in your active configuration.\n\nAny previously active credentials will still be retained,\nthey will just no longer be the active credentials.', version=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=False), _specified_args={'key_file': '--key-file'}, account=None, authority_selector=None, authorization_token_file=None, calliope_command=<googlecloudsdk.calliope.backend.Command object at 0x2b349d0>, command_path=['gcloud', 'auth', 'activate-service-account'], configuration=None, credential_file_override=None, document=None, flatten=None, format=None, h=None, help=None, http_timeout=None, key_file='service-account-key-file', log_http=None, password_file=None, project=None, prompt_for_password=False, quiet=None, trace_email=None, trace_log=None, trace_token=None, user_output_enabled=None, verbosity='warning', version=None).
+2017-03-11 03:13:44,791 DEBUG    root            (gcloud.auth.activate-service-account) Unable to read file [service-account-key-file]
+Traceback (most recent call last):
+  File "/usr/lib64/google-cloud-sdk/lib/googlecloudsdk/calliope/cli.py", line 742, in Execute
+    resources = args.calliope_command.Run(cli=self, args=args)
+  File "/usr/lib64/google-cloud-sdk/lib/googlecloudsdk/calliope/backend.py", line 739, in Run
+    resources = command_instance.Run(args)
+  File "/usr/lib64/google-cloud-sdk/lib/surface/auth/activate_service_account.py", line 62, in Run
+    cred = auth_service_account.CredentialsFromAdcFile(args.key_file)
+  File "/usr/lib64/google-cloud-sdk/lib/googlecloudsdk/api_lib/auth/service_account.py", line 46, in CredentialsFromAdcFile
+    content = files.GetFileContents(filename)
+  File "/usr/lib64/google-cloud-sdk/lib/googlecloudsdk/core/util/files.py", line 896, in GetFileContents
+    raise Error(u'Unable to read file [{0}]'.format(path))
+Error: Unable to read file [service-account-key-file]
+2017-03-11 03:13:44,791 ERROR    root            (gcloud.auth.activate-service-account) Unable to read file [service-account-key-file]
